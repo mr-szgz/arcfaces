@@ -1,0 +1,10 @@
+[tools]
+powershell = "7"
+python = "3.10"
+uv = "latest"
+
+[tasks.init]
+run = "uv venv --python 3.10.16 --seed"
+
+[env]
+UV_LINK_MODE="copy"

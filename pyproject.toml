@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arcfaces"
+version = "0.0.0"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "numpy>=2.2.6",
+    "onnxruntime-gpu>=1.23.2",
+    "opencv-python>=4.13.0.92",
+    "scikit-image>=0.25.2",
+    "torch",
+    "torchvision",
+    "tqdm>=4.67.3",
+    "winregistry>=2.1.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "build",
+    "pip", # TODO: ensure pip stays upgraded
+    # "cibuildwheel",
+    # "pyinstaller>=6",
+    # "pytest>=8",
+]
+
+[project.scripts]
+arcfaces = "arcfaces:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["arcfaces*"]
+
+[tool.setuptools.package-data]
+arcfaces = ["labels/*.yaml"]
+
