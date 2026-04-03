@@ -596,8 +596,14 @@ def recognize_command(
                 crop_out = crop_base
                 crop_h, crop_w = crop_base.shape[:2]
                 if crop_h > 0 and crop_w > 0:
-                    interp = cv2.INTER_AREA if max(crop_h, crop_w) > save_size else cv2.INTER_LINEAR
-                    crop_out = cv2.resize(crop_base, (save_size, save_size), interpolation=interp)
+                    scale = save_size / float(min(crop_h, crop_w))
+                    new_w = max(save_size, int(round(crop_w * scale)))
+                    new_h = max(save_size, int(round(crop_h * scale)))
+                    interp = cv2.INTER_AREA if scale < 1.0 else cv2.INTER_LINEAR
+                    resized = cv2.resize(crop_base, (new_w, new_h), interpolation=interp)
+                    x0 = max(0, (new_w - save_size) // 2)
+                    y0 = max(0, (new_h - save_size) // 2)
+                    crop_out = resized[y0 : y0 + save_size, x0 : x0 + save_size]
                 cv2.imwrite(str(output_image_path), crop_out)
                 crop_entries.append({"size": save_size, "path": str(output_image_path)})
 
