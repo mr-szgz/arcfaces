@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-03
+
+### Changed
+- Release workflow now builds a Windows executable and publishes it with release assets.
+- Development tooling updated for PyInstaller builds and README generation.
+- Removed obsolete readme-update skill tooling.
+
 ## [0.1.0] - 2026-04-03
 
 ### Added
