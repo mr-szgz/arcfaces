@@ -6,5 +6,17 @@ uv = "latest"
 [tasks.init]
 run = "uv venv --python 3.10.16 --seed"
 
+[tasks.clean]
+run = "pwsh -NoProfile -File scripts/Invoke-Clean-Arcfaces-Build.ps1"
+
+[tasks.build]
+run = "pwsh -NoProfile -File scripts/Invoke-Build-Run-Arcfaces.ps1"
+
+[tasks.build-wheels]
+run = "pwsh -NoProfile -File scripts/Invoke-Build-Arcfaces-Wheels.ps1"
+
+[tasks.bump]
+run = "pwsh -NoProfile -File scripts/Invoke-Bump-Arcfaces-Version.ps1 -BumpVersion auto"
+
 [env]
 UV_LINK_MODE="copy"

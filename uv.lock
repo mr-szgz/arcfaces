@@ -8,13 +8,13 @@ version = "0.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
+    { name = "onnxruntime" },
     { name = "onnxruntime-gpu" },
     { name = "opencv-python" },
     { name = "scikit-image" },
     { name = "torch" },
     { name = "torchvision" },
     { name = "tqdm" },
-    { name = "winregistry" },
 ]
 
 [package.optional-dependencies]
@@ -27,14 +27,14 @@ dev = [
 requires-dist = [
     { name = "build", marker = "extra == 'dev'" },
     { name = "numpy", specifier = ">=2.2.6" },
-    { name = "onnxruntime-gpu", specifier = ">=1.23.2" },
+    { name = "onnxruntime" },
+    { name = "onnxruntime-gpu" },
     { name = "opencv-python", specifier = ">=4.13.0.92" },
     { name = "pip", marker = "extra == 'dev'" },
     { name = "scikit-image", specifier = ">=0.25.2" },
     { name = "torch" },
     { name = "torchvision" },
     { name = "tqdm", specifier = ">=4.67.3" },
-    { name = "winregistry", specifier = ">=2.1.5" },
 ]
 provides-extras = ["dev"]
 
@@ -434,6 +434,26 @@ wheels = [
 ]
 
 [[package]]
+name = "onnxruntime"
+version = "1.23.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "coloredlogs" },
+    { name = "flatbuffers" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "protobuf" },
+    { name = "sympy" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/35/d6/311b1afea060015b56c742f3531168c1644650767f27ef40062569960587/onnxruntime-1.23.2-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:a7730122afe186a784660f6ec5807138bf9d792fa1df76556b27307ea9ebcbe3", size = 17195934, upload-time = "2025-10-27T23:06:14.143Z" },
+    { url = "https://files.pythonhosted.org/packages/db/db/81bf3d7cecfbfed9092b6b4052e857a769d62ed90561b410014e0aae18db/onnxruntime-1.23.2-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:b28740f4ecef1738ea8f807461dd541b8287d5650b5be33bca7b474e3cbd1f36", size = 19153079, upload-time = "2025-10-27T23:05:57.686Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/4d/a382452b17cf70a2313153c520ea4c96ab670c996cb3a95cc5d5ac7bfdac/onnxruntime-1.23.2-cp310-cp310-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:8f7d1fe034090a1e371b7f3ca9d3ccae2fabae8c1d8844fb7371d1ea38e8e8d2", size = 15219883, upload-time = "2025-10-22T03:46:21.66Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/56/179bf90679984c85b417664c26aae4f427cba7514bd2d65c43b181b7b08b/onnxruntime-1.23.2-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:4ca88747e708e5c67337b0f65eed4b7d0dd70d22ac332038c9fc4635760018f7", size = 17370357, upload-time = "2025-10-22T03:46:57.968Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/6d/738e50c47c2fd285b1e6c8083f15dac1a5f6199213378a5f14092497296d/onnxruntime-1.23.2-cp310-cp310-win_amd64.whl", hash = "sha256:0be6a37a45e6719db5120e9986fcd30ea205ac8103fd1fb74b6c33348327a0cc", size = 13467651, upload-time = "2025-10-27T23:06:11.904Z" },
+]
+
+[[package]]
 name = "onnxruntime-gpu"
 version = "1.23.2"
 source = { registry = "https://pypi.org/simple" }
@@ -694,15 +714,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/72/94/1a15dd82efb362ac84269196e94cf00f187f7ed21c242792a923cdb1c61f/typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466", size = 109391, upload-time = "2025-08-25T13:49:26.313Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/18/67/36e9267722cc04a6b9f15c7f3441c2363321a3ea07da7ae0c0707beb2a9c/typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548", size = 44614, upload-time = "2025-08-25T13:49:24.86Z" },
-]
-
-[[package]]
-name = "winregistry"
-version = "2.1.5"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/58/b4/57c8cd9c3a50b0b71ab924377a12326c528f822c35cc60d192dec423e3b0/winregistry-2.1.5.tar.gz", hash = "sha256:05525ecac026dbdd2d20428a532354138dc6711de8a8f8efdc40484131627ba8", size = 9862, upload-time = "2026-04-02T06:56:59.471Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/69/9b/5e05038bfe8e2109b83bfd7237668d5cd26f038380ed9cf4db4b441966d1/winregistry-2.1.5-py3-none-any.whl", hash = "sha256:84e597b8f06c985a6be397e8c75400c2d72797d24134eb740b7b2f3de13089c1", size = 8892, upload-time = "2026-04-02T06:56:58.401Z" },
 ]
 
 [[package]]

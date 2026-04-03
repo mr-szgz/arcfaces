@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import sys
 from importlib import metadata
 from pathlib import Path
@@ -308,7 +309,7 @@ def cscs_recognize(
     return embedding, cropped_image
 
 
-def recognize_command(path_value: str, *, save_size: int | None = None) -> int:
+def recognize_command(path_value: str, *, save_faces: int = 512, threshold: float = 0.5) -> int:
     input_path = Path(path_value).expanduser()
     if not input_path.exists():
         print(f"Path not found: {input_path}", file=sys.stderr)
@@ -320,7 +321,21 @@ def recognize_command(path_value: str, *, save_size: int | None = None) -> int:
         return 1
 
     output_dir = input_path / "arcfaces" if input_path.is_dir() else input_path.parent / "arcfaces"
-    if not output_dir.exists():
+    if output_dir.exists():
+        has_existing = any(output_dir.iterdir())
+        if has_existing:
+            try:
+                reply = input(f"Arcfaces output exists at {output_dir}. Reuse existing files? [Y/n]: ")
+            except EOFError:
+                reply = ""
+            reply = reply.strip().lower()
+            if reply in ("n", "no"):
+                shutil.rmtree(output_dir)
+                output_dir.mkdir(parents=True, exist_ok=True)
+            else:
+                print(f"Reusing existing arcfaces output: {output_dir}")
+                return 0
+    else:
         output_dir.mkdir(parents=True)
     input_root = input_path if input_path.is_dir() else input_path.parent
 
@@ -568,11 +583,11 @@ def recognize_command(path_value: str, *, save_size: int | None = None) -> int:
             output_image_path = output_path.with_name(
                 f"{output_path.stem}__face{face_index}{image_path.suffix}"
             )
-            if save_size is not None:
+            if save_faces is not None:
                 crop_h, crop_w = crop_bgr.shape[:2]
                 if crop_h > 0 and crop_w > 0:
-                    interp = cv2.INTER_AREA if max(crop_h, crop_w) > save_size else cv2.INTER_LINEAR
-                    crop_bgr = cv2.resize(crop_bgr, (save_size, save_size), interpolation=interp)
+                    interp = cv2.INTER_AREA if max(crop_h, crop_w) > save_faces else cv2.INTER_LINEAR
+                    crop_bgr = cv2.resize(crop_bgr, (save_faces, save_faces), interpolation=interp)
             cv2.imwrite(str(output_image_path), crop_bgr)
 
             faces.append(
@@ -608,7 +623,6 @@ def recognize_command(path_value: str, *, save_size: int | None = None) -> int:
             )
 
     if face_items:
-        threshold = 0.5
         clusters: list[dict[str, object]] = []
         for item in face_items:
             emb = item["embedding"]
@@ -659,8 +673,11 @@ def recognize_command(path_value: str, *, save_size: int | None = None) -> int:
     return 0
 
 
-def top_identity(path_value: str) -> int:
+def top_identity(path_value: str, *, count: int = 1) -> int:
     base_path = Path(path_value).expanduser()
+    if count < 1:
+        print("Count must be at least 1.", file=sys.stderr)
+        return 1
     if base_path.is_dir() and base_path.name == "arcfaces":
         output_dir = base_path
     else:
@@ -677,19 +694,32 @@ def top_identity(path_value: str) -> int:
         print("No identity folders found.", file=sys.stderr)
         return 1
 
-    best_dir: Path | None = None
-    best_count = -1
+    if base_path.is_dir():
+        source_dir = base_path.parent if base_path.name == "arcfaces" else base_path
+    else:
+        source_dir = base_path.parent
+    ranked_identities: list[tuple[int, str, Path]] = []
     for identity_dir in sorted(identity_dirs):
-        count = sum(
+        face_count = sum(
             1 for path in identity_dir.iterdir() if path.is_file() and path.suffix.lower() == ".json"
         )
-        if count > best_count:
-            best_count = count
-            best_dir = identity_dir
+        ranked_identities.append((face_count, identity_dir.name, identity_dir))
 
-    if best_dir is None:
+    ranked_identities.sort(key=lambda item: (-item[0], item[1]))
+    selected = ranked_identities[: min(count, len(ranked_identities))]
+    if not selected:
         print("No identity detections found.", file=sys.stderr)
         return 1
 
-    print(str(best_dir))
+    destinations: list[Path] = []
+    for _, _, identity_dir in selected:
+        destination = source_dir / identity_dir.name
+        if destination.exists():
+            print(f"Destination already exists: {destination}", file=sys.stderr)
+            return 1
+        destinations.append(destination)
+
+    for (_, _, identity_dir), destination in zip(selected, destinations):
+        shutil.move(str(identity_dir), str(destination))
+        print(str(destination))
     return 0
