@@ -22,6 +22,9 @@ dependencies = [
 dev = [
     "build",
     "pip", # TODO: ensure pip stays upgraded
+    "jinja2",
+    "requests",
+    "pyinstaller",
     # "cibuildwheel",
     # "pytest>=8",
 ]
