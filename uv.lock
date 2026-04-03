@@ -7,6 +7,7 @@ name = "arcfaces"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
+    { name = "kornia" },
     { name = "numpy" },
     { name = "onnxruntime" },
     { name = "onnxruntime-gpu" },
@@ -26,6 +27,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "build", marker = "extra == 'dev'" },
+    { name = "kornia", specifier = ">=0.8.2" },
     { name = "numpy", specifier = ">=2.2.6" },
     { name = "onnxruntime" },
     { name = "onnxruntime-gpu" },
@@ -211,6 +213,33 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.6.tar.gz", hash = "sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d", size = 245115, upload-time = "2025-03-05T20:05:02.478Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl", hash = "sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67", size = 134899, upload-time = "2025-03-05T20:05:00.369Z" },
+]
+
+[[package]]
+name = "kornia"
+version = "0.8.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "kornia-rs" },
+    { name = "packaging" },
+    { name = "torch" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c6/e6/45e757d4924176e4d4e111e10effaab7db382313243e0188a06805010073/kornia-0.8.2.tar.gz", hash = "sha256:5411b2ce0dd909d1608016308cd68faeef90f88c47f47e8ecd40553fd4d8b937", size = 667151, upload-time = "2025-11-08T12:10:03.042Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/79/d4/e9bd12b7b4cbd23b4dfb47e744ee1fa54d6d9c3c9bc406ec86c1be8c8307/kornia-0.8.2-py2.py3-none-any.whl", hash = "sha256:32dfe77c9c74a87a2de49395aa3c2c376a1b63c27611a298b394d02d13905819", size = 1095012, upload-time = "2025-11-08T12:10:01.226Z" },
+]
+
+[[package]]
+name = "kornia-rs"
+version = "0.1.10"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ab/17/8b3518ece01512a575b18f86b346879793d3dea264b314796bbd44d42e11/kornia_rs-0.1.10.tar.gz", hash = "sha256:5fd3fbc65240fa751975f5870b079f98e7fdcaa2885ea577b3da324d8bf01d81", size = 145610, upload-time = "2025-11-08T11:29:32.399Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bb/40/6a59c5b99e19e1be7fff1d68dd3b3eddc80e5304dab75ebb78d0199e2484/kornia_rs-0.1.10-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:e95ccd4b3f73a0d5cbe16c03fd705fa8d75e9df7b044ba9a6c5957b2591003f3", size = 2815093, upload-time = "2025-11-08T11:30:17.98Z" },
+    { url = "https://files.pythonhosted.org/packages/17/aa/77f5882707467a6af0833b3ac1497638352bc391d082713b24a3bd187f73/kornia_rs-0.1.10-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9bc8d5de7d7611b68746b2feff594a073740c4f915d0ccc37bd1d189029c20fe", size = 2078046, upload-time = "2025-11-08T11:30:04.952Z" },
+    { url = "https://files.pythonhosted.org/packages/31/43/cff694d864bf60e1e3853ec98bdabc66433f0eeffb7e7f97d27a0b907a88/kornia_rs-0.1.10-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:edb94ce80a614a5f00cb68755d7a182236482584e78388217974ef811f4dbb30", size = 2204974, upload-time = "2025-11-08T11:29:30.626Z" },
+    { url = "https://files.pythonhosted.org/packages/f5/5a/907580d1e573bc1862557cb70d1f1888bde1b33240d15cd10ff06c93a57c/kornia_rs-0.1.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:859942c70f503bba813c99a39d3011d3e51f294db8058f87842efa180955cab4", size = 3042947, upload-time = "2025-11-08T11:29:48.431Z" },
+    { url = "https://files.pythonhosted.org/packages/5c/13/3d0a45f297b1a3f308893751b62080898ce415c61a3629a3d6b04cf55db7/kornia_rs-0.1.10-cp310-cp310-win_amd64.whl", hash = "sha256:74f17ea9afc0a5312832c32f6670e1a4b2162dcf9a8908fb46bbb56d2c707e9e", size = 2543744, upload-time = "2025-11-08T11:30:30.929Z" },
 ]
 
 [[package]]

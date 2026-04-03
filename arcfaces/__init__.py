@@ -58,12 +58,33 @@ def _build_parser() -> argparse.ArgumentParser:
         metavar="SIM",
         help="Face similarity threshold for clustering (default: 0.5).",
     )
+    parser.add_argument(
+        "--merge-faces",
+        "-MergeFaces",
+        dest="merge_faces",
+        metavar="PATH",
+        help="Path to an identity folder of face JSONs to merge into a single embedding.",
+    )
+    parser.add_argument(
+        "--name",
+        "-Name",
+        dest="merge_name",
+        metavar="NAME",
+        help="Optional embedding name override for --merge-faces.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+    if args.merge_faces:
+        from .embeddings import write_visomaster_embedding_for_folder
+
+        write_visomaster_embedding_for_folder(
+            args.merge_faces, name_override=args.merge_name
+        )
+        return 0
     if not args.recognize and args.path:
         args.recognize = args.path
     if not args.recognize and args.top is None:
