@@ -26,14 +26,17 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Path to an image or a folder of images.",
     )
     parser.add_argument(
+        "path",
+        nargs="?",
+        help="Path to an image or a folder of images (positional).",
+    )
+    parser.add_argument(
         "--save-faces",
         "-SaveFaces",
         dest="save_faces",
-        type=int,
-        default=512,
-        choices=(256, 512, 1024),
-        metavar="SIZE",
-        help="Resize-crop face images to SIZE (256, 512, or 1024). Default: 512.",
+        default="512",
+        metavar="SIZES",
+        help="Resize-crop face images to SIZES (comma-separated). Example: --save-faces 256,512,1024.",
     )
     parser.add_argument(
         "--save-top",
@@ -43,6 +46,7 @@ def _build_parser() -> argparse.ArgumentParser:
         const=1,
         type=int,
         metavar="N",
+        default=1,
         help="Move the top identity folders into the source directory (default N=1).",
     )
     parser.add_argument(
@@ -60,20 +64,35 @@ def _build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+    if not args.recognize and args.path:
+        args.recognize = args.path
     if not args.recognize and args.top is None:
         parser.print_usage(sys.stderr)
         return 2
-    top_path = None
-    top_count = 1
-    if args.top is not None:
-        top_path = "."
-        top_count = args.top
+    save_faces_text = str(args.save_faces)
+    size_tokens = [token.strip() for token in save_faces_text.split(",") if token.strip()]
+    if not size_tokens:
+        print("Save faces sizes must be one or more integers.", file=sys.stderr)
+        return 2
+    save_faces_sizes: list[int] = []
+    for token in size_tokens:
+        try:
+            size_value = int(token)
+        except ValueError:
+            print(f"Invalid size value: {token}", file=sys.stderr)
+            return 2
+        if size_value <= 0:
+            print(f"Invalid size value: {token}", file=sys.stderr)
+            return 2
+        save_faces_sizes.append(size_value)
+    top_path = "."
+    top_count = args.top
     from .arcfaces import recognize_command, top_identity
 
     if args.recognize:
         rc = recognize_command(
             args.recognize,
-            save_faces=args.save_faces,
+            save_faces=save_faces_sizes,
             threshold=args.threshold,
         )
         if rc != 0:

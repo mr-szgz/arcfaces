@@ -309,7 +309,9 @@ def cscs_recognize(
     return embedding, cropped_image
 
 
-def recognize_command(path_value: str, *, save_faces: int = 512, threshold: float = 0.5) -> int:
+def recognize_command(
+    path_value: str, *, save_faces: int | list[int] = 512, threshold: float = 0.5
+) -> int:
     input_path = Path(path_value).expanduser()
     if not input_path.exists():
         print(f"Path not found: {input_path}", file=sys.stderr)
@@ -391,6 +393,11 @@ def recognize_command(path_value: str, *, save_faces: int = 512, threshold: floa
     )
 
     face_items: list[dict[str, object]] = []
+
+    if isinstance(save_faces, int):
+        save_sizes = [save_faces]
+    else:
+        save_sizes = [size for size in save_faces if size > 0]
 
     for image_path in tqdm(images, desc="ArcFaces", unit="image"):
         output_path = (output_dir / image_path.relative_to(input_root)).with_suffix(".json")
@@ -580,15 +587,19 @@ def recognize_command(path_value: str, *, save_faces: int = 512, threshold: floa
                 if crop_bgr.ndim == 3 and crop_bgr.shape[2] == 3:
                     crop_bgr = cv2.cvtColor(crop_bgr, cv2.COLOR_RGB2BGR)
 
-            output_image_path = output_path.with_name(
-                f"{output_path.stem}__face{face_index}{image_path.suffix}"
-            )
-            if save_faces is not None:
-                crop_h, crop_w = crop_bgr.shape[:2]
+            crop_base = crop_bgr
+            crop_entries: list[dict[str, object]] = []
+            for save_size in save_sizes:
+                output_image_path = output_path.with_name(
+                    f"{output_path.stem}__face{face_index}__{save_size}{image_path.suffix}"
+                )
+                crop_out = crop_base
+                crop_h, crop_w = crop_base.shape[:2]
                 if crop_h > 0 and crop_w > 0:
-                    interp = cv2.INTER_AREA if max(crop_h, crop_w) > save_faces else cv2.INTER_LINEAR
-                    crop_bgr = cv2.resize(crop_bgr, (save_faces, save_faces), interpolation=interp)
-            cv2.imwrite(str(output_image_path), crop_bgr)
+                    interp = cv2.INTER_AREA if max(crop_h, crop_w) > save_size else cv2.INTER_LINEAR
+                    crop_out = cv2.resize(crop_base, (save_size, save_size), interpolation=interp)
+                cv2.imwrite(str(output_image_path), crop_out)
+                crop_entries.append({"size": save_size, "path": str(output_image_path)})
 
             faces.append(
                 {
@@ -597,7 +608,8 @@ def recognize_command(path_value: str, *, save_faces: int = 512, threshold: floa
                     "score": score,
                     "kps": face_kps.tolist(),
                     "embedding": embedding.astype(float).tolist(),
-                    "crop": str(output_image_path),
+                    "crop": str(crop_entries[0]["path"]) if crop_entries else "",
+                    "crops": crop_entries,
                 }
             )
 
@@ -618,7 +630,8 @@ def recognize_command(path_value: str, *, save_faces: int = 512, threshold: floa
                         "detector_model": str(det_model_path),
                     },
                     "json_path": output_path.with_name(f"{output_path.stem}__face{face['index']}.json"),
-                    "crop_path": Path(face["crop"]),
+                    "crop_paths": [Path(entry["path"]) for entry in face["crops"]],
+                    "crop_sizes": [entry["size"] for entry in face["crops"]],
                 }
             )
 
@@ -660,13 +673,22 @@ def recognize_command(path_value: str, *, save_faces: int = 512, threshold: floa
                 cluster_dir.mkdir(parents=True, exist_ok=True)
             for item in cluster["items"]:
                 json_dest = cluster_dir / item["json_path"].name
-                crop_path = item["crop_path"]
-                crop_dest = cluster_dir / crop_path.name
-                if crop_path.exists():
-                    crop_path.replace(crop_dest)
+                crop_paths = item["crop_paths"]
+                crop_sizes = item["crop_sizes"]
+                crop_destinations: list[str] = []
+                for crop_path in crop_paths:
+                    crop_dest = cluster_dir / crop_path.name
+                    if crop_path.exists():
+                        crop_path.replace(crop_dest)
+                    crop_destinations.append(str(crop_dest))
                 payload = item["payload"]
                 payload["identity"] = cluster_dir.name
-                payload["face"]["crop"] = str(crop_dest)
+                if crop_destinations:
+                    payload["face"]["crop"] = crop_destinations[0]
+                    payload["face"]["crops"] = [
+                        {"size": crop_sizes[index], "path": crop_destinations[index]}
+                        for index in range(len(crop_destinations))
+                    ]
                 json_dest.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     print(f"Wrote {len(images)} file(s) to {output_dir}")
