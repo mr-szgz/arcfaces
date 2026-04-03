@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from datetime import date
 
 from .arcfaces import __version__
 
@@ -15,7 +16,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "-Version",
         "-v",
         action="version",
-        version=__version__,
+        version=_banner(),
         help="Show the Arcfaces version and exit.",
     )
     parser.add_argument(
@@ -75,9 +76,15 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _banner() -> str:
+    year = date.today().year
+    return f"Arcfaces CLI {__version__}\nCopyright (c) {year}"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+    print(_banner(), flush=True)
     if args.merge_faces:
         from .embeddings import write_visomaster_embedding_for_folder
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `--open-output-dir` (arcfaces): open the output directory after a run.
+- Added `LICENSE` (GPLv3). This means the project is now under the GNU General Public License v3, requiring source availability and GPL-compatible derivatives; we chose this to align with visomaster-fusion so the projects can cohabitate in the future.
+
 ## [0.1.1] - 2026-04-03
 
 ### Changed

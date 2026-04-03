@@ -726,12 +726,28 @@ def top_identity(path_value: str, *, count: int = 1) -> int:
         source_dir = base_path.parent if base_path.name == "arcfaces" else base_path
     else:
         source_dir = base_path.parent
+    min_identity_matches = 3
     ranked_identities: list[tuple[int, str, Path]] = []
+    low_count_identities: list[Path] = []
     for identity_dir in sorted(identity_dirs):
         face_count = sum(
             1 for path in identity_dir.iterdir() if path.is_file() and path.suffix.lower() == ".json"
         )
+        if face_count < min_identity_matches:
+            low_count_identities.append(identity_dir)
+            continue
         ranked_identities.append((face_count, identity_dir.name, identity_dir))
+
+    for identity_dir in low_count_identities:
+        if identity_dir.exists():
+            shutil.rmtree(identity_dir)
+
+    if not ranked_identities:
+        print(
+            f"No identities met the minimum match count ({min_identity_matches}).",
+            file=sys.stderr,
+        )
+        return 0
 
     ranked_identities.sort(key=lambda item: (-item[0], item[1]))
     selected = ranked_identities[: min(count, len(ranked_identities))]

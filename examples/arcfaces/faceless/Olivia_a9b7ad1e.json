@@ -1,0 +1,6 @@
+{
+  "image": "S:\\Spaces\\Image-Classification\\Arcfaces\\examples\\Olivia_a9b7ad1e.jpg",
+  "faces": [],
+  "arcface_model": "S:\\Drives\\VisoMatrix\\Data\\Packages\\visomaster_fusion_portable\\VisoMaster-Fusion\\model_assets\\w600k_r50.onnx",
+  "detector_model": "S:\\Drives\\VisoMatrix\\Data\\Packages\\visomaster_fusion_portable\\VisoMaster-Fusion\\model_assets\\scrfd_2.5g_bnkps.onnx"
+}
