@@ -3,6 +3,10 @@ powershell = "7"
 python = "3.10"
 uv = "latest"
 
+[env]
+UV_LINK_MODE="copy"
+_.path = [".venv", ".venv/Scripts", ".venv/bin"]
+
 [tasks.init]
 run = "uv venv --python 3.10.16 --seed"
 
@@ -17,6 +21,3 @@ run = "pwsh -NoProfile -File scripts/Invoke-Build-Arcfaces-Wheels.ps1"
 
 [tasks.bump]
 run = "pwsh -NoProfile -File scripts/Invoke-Bump-Arcfaces-Version.ps1 -BumpVersion auto"
-
-[env]
-UV_LINK_MODE="copy"
