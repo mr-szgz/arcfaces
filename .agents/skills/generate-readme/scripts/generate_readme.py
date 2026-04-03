@@ -7,6 +7,7 @@ with current release URLs and changelog content.
 
 import os
 import sys
+import subprocess
 from pathlib import Path
 import requests
 from jinja2 import Environment, FileSystemLoader
@@ -15,7 +16,7 @@ from jinja2 import Environment, FileSystemLoader
 def get_project_root():
     """Get the project root directory."""
     # Go up from .agents/skills/update-readme/scripts/ to project root
-    return Path(__file__).parent.parent.parent.parent
+    return Path(__file__).resolve().parents[4]
 
 
 def get_latest_release_info(owner, repo):
@@ -31,6 +32,43 @@ def get_latest_release_info(owner, repo):
     except Exception as e:
         print(f"Warning: Could not fetch release info: {e}")
         return None
+
+
+def get_github_owner_repo_from_git():
+    """
+    Try to infer GitHub owner/repo from the git remote.
+    Supports HTTPS and SSH GitHub remotes.
+    Returns (owner, repo) or (None, None) if not found.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "config", "--get", "remote.origin.url"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        url = result.stdout.strip()
+        if not url:
+            return None, None
+
+        # HTTPS: https://github.com/owner/repo.git
+        if "github.com/" in url:
+            tail = url.split("github.com/", 1)[1]
+        # SSH: git@github.com:owner/repo.git
+        elif "github.com:" in url:
+            tail = url.split("github.com:", 1)[1]
+        else:
+            return None, None
+
+        tail = tail.strip("/")
+        if tail.endswith(".git"):
+            tail = tail[:-4]
+        parts = tail.split("/")
+        if len(parts) >= 2:
+            return parts[0], parts[1]
+        return None, None
+    except Exception:
+        return None, None
 
 
 def find_asset_url(release_data, asset_pattern):
@@ -59,7 +97,7 @@ def get_changelog_content():
 def main():
     """Main function to generate README.md."""
     project_root = get_project_root()
-    template_dir = project_root / ".agents" / "skills" / "update-readme" / "references"
+    template_dir = project_root / ".agents" / "skills" / "generate-readme" / "assets"
     template_path = template_dir / "README.template.md"
     output_path = project_root / "README.md"
     
@@ -68,10 +106,12 @@ def main():
         print(f"Error: Template not found at {template_path}")
         sys.exit(1)
     
-    # Get GitHub info (you may need to adjust owner/repo)
-    # For now, using placeholder - you should update these values
-    github_owner = "your-username"  # Update this
-    github_repo = "arcfaces"        # Update this
+    # Get GitHub info (prefer inferring from git remote)
+    github_owner, github_repo = get_github_owner_repo_from_git()
+    if not github_owner or not github_repo:
+        # Fallback placeholders; update if inference fails.
+        github_owner = "your-username"
+        github_repo = "arcfaces"
     
     # Fetch latest release info
     print("Fetching latest release information...")
