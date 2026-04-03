@@ -4,11 +4,15 @@ Analyze images and folders of images using arcface to organize and create visoma
 
 ## Install
 
-1. pip install https://github.com/mr-szgz/arcfaces/releases/download/v0.1.0/arcfaces-0.1.0-py3-none-any.whl
-2. download [run_arcfaces.exe](<!-- run_arcfaces.exe not found -->) from release
-3. run_arcfaces.exe --install
+1. `pip install https://github.com/mr-szgz/arcfaces/releases/download/v0.1.1/arcfaces-0.1.1-py3-none-any.whl`
+2. download [run_arcfaces.exe](https://github.com/mr-szgz/arcfaces/releases/download/v0.1.1/run-arcfaces.exe) from release
+3. `run_arcfaces.exe --install` will install "**Run Arcfaces**" into File Explorer for Folders -> Go Right-Click a Folder
 
-## CHANGELOG
+## Usage
+
+```sh
+python -m arcfaces "M:/media/dump/photos"
+```
 
 # Changelog
 
@@ -18,6 +22,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.1.1] - 2026-04-03
+
+### Changed
+- Release workflow now builds a Windows executable and publishes it with release assets.
+- Development tooling updated for PyInstaller builds and README generation.
+- Removed obsolete readme-update skill tooling.
 
 ## [0.1.0] - 2026-04-03
 
